@@ -17,6 +17,7 @@ existing_genres = {
 }
 movie_collection={}
 movie_text_descrip= []
+user_prompt = str(input("please enter the description of your movie: "))
 
 if os.path.exists("movies.json"):
 
@@ -161,8 +162,6 @@ def filter_movies_by_genre():
 user_genre_selection()
 filter_movies_by_genre()
 
-user_prompt = "I want an emotional film about family relationships, personal struggles, and second chances that feels moving and meaningful without being completely depressing."
-
 words = user_prompt.split()
 user_years =[]
 year_condition = None
@@ -190,7 +189,6 @@ for word in words:
         for year in years_between:
             if year.isdigit() and len(year) == 4:
                 user_years.append(int(year))
-
 
 def filter_movies_by_year(movie_collection, year_condition, user_years):
     filtered_movies = []
@@ -222,7 +220,6 @@ def filter_movies_by_year(movie_collection, year_condition, user_years):
 
     return filtered_movies
       
-
 if year_condition is not None:
     filtered_movies = filter_movies_by_year(
         filtered_by_genre_movie_collection, year_condition, user_years
@@ -233,11 +230,9 @@ else:
 cross_enc_model = CrossEncoder("BAAI/bge-reranker-base")
 cross_enc_model.activation_fn=None
 
-# Match each movie ID to its description
 movie_ids = list(movie_collection.keys())
 movie_description_by_id = dict(zip(movie_ids, movie_text_descrip))
 
-# Stage 1: Retrieve eligible movies for BGE
 candidate_movie_ids = []
 
 for movie_id in filtered_by_genre_movie_collection:
@@ -246,8 +241,6 @@ for movie_id in filtered_by_genre_movie_collection:
 
     candidate_movie_ids.append(movie_id)
 
-
-# Stage 2: Score each candidate with the cross-encoder
 cross_enc_pairs = []
 
 for movie_id in candidate_movie_ids:
@@ -256,13 +249,11 @@ for movie_id in candidate_movie_ids:
 
 cross_enc_scores = cross_enc_model.predict(cross_enc_pairs)
 
-# Rank candidates by cross-encoder score
 ranked_indices = np.argsort(cross_enc_scores)[::-1]
 
-# E5 model
 e5_model = SentenceTransformer("intfloat/e5-base-v2")
 
-# Encode movie descriptions
+
 e5_movie_descriptions = [
     "passage: " + description
     for description in movie_text_descrip

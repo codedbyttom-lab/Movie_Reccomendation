@@ -55,8 +55,8 @@ pip install sentence-transformers requests scikit-learn numpy
 2. Ensure `movies.json` is in the project directory.
 3. Install the required dependencies.
 4. Run `movie_algorithm.py`.
-5. Select the desired movie genres.
-6. Enter your movie description in the `user_prompt` variable.
+5. Enter your movie description in the `user_prompt` variable.
+6. Select the desired movie genres seperated by a comma.
 7. Optionally include a release-year condition in the prompt.
 
 ## Limitations
